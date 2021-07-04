@@ -1,11 +1,13 @@
 #!/usr/bin/python3
 
 import json
+from treex import Treex
 import unittest
 
 class TreexTest(unittest.TestCase):
     def domirror(self, testdef):
-        self.assertTrue(True)
+        source = Treex.fromjson(testdef["source"])
+        self.assertTrue(Treex.match(source, source))
 
 if __name__ == '__main__':
     with open('tests.json') as jtests:
