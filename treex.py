@@ -19,7 +19,7 @@ class Treex:
 class Selector:
     @classmethod
     def select(cls, treex, pattern):
-        res = selectnode(treex, pattern)
+        res = cls.selectnode(treex, pattern)
         if res != None:
             res = res.groups
         return res
@@ -28,7 +28,7 @@ class Selector:
     def selectnode(cls, treex, pattern):
         if treex.text != pattern.text:
             return None
-       return selectattrs(cls, treex, pattern)
+        return cls.selectattrs(treex, pattern)
 
     @classmethod
     def selectattrs(cls, treex, pattern):
@@ -38,7 +38,7 @@ class Selector:
                 return None
             else:
                 if kind in treex.attributes:
-                    res = treex.attributes[kind].match(value)
+                    res = cls.selectnode(treex.attributes[kind], value)
                     if res == None:
                         return None
                     else:
