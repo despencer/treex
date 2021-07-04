@@ -2,4 +2,11 @@
  "type" : "mirror",
  "name" : "11",
  "source" : "name"
-}]
+},
+{
+ "type" : "negmirror",
+ "name" : "21",
+ "source" : "name",
+ "target" : "aname"
+}
+]

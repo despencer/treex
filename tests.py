@@ -9,6 +9,11 @@ class TreexTest(unittest.TestCase):
         source = Treex.fromjson(testdef["source"])
         self.assertTrue(Treex.match(source, source))
 
+    def donegmirror(self, testdef):
+        source = Treex.fromjson(testdef["source"])
+        target = Treex.fromjson(testdef["target"])
+        self.assertFalse(Treex.match(source, target))
+
 if __name__ == '__main__':
     with open('tests.json') as jtests:
         tests = json.load(jtests)
