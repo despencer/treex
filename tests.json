@@ -4,9 +4,22 @@
  "source" : "name"
 },
 {
+ "type" : "mirror",
+ "name" : "12",
+ "source" : [ "name", ["x" , "a"] ]
+},
+{
  "type" : "negmirror",
+ "active" : false,
  "name" : "21",
  "source" : "name",
  "target" : "aname"
+},
+{
+ "type" : "negmirror",
+ "active" : false,
+ "name" : "22",
+ "source" : [ "name", ["x" , "a"] ],
+ "target" : [ "name", ["y" , "a"] ]
 }
 ]
