@@ -1,3 +1,5 @@
+import logging
+
 class Treex:
     @classmethod
     def match(cls, treex, pattern):
@@ -18,9 +20,11 @@ class Treex:
 class Selector:
     @classmethod
     def select(cls, treex, pattern):
+        logging.debug('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
         res = cls.selectnode(treex, pattern)
         if res != None:
             res = res.groups
+        logging.debug('select returns with %s', res)
         return res
 
     @classmethod
@@ -46,6 +50,10 @@ class Selector:
 
 class Utils:
     @classmethod
+    def init(cls):
+        logging.basicConfig(filename='treex.log', filemode='w', level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+
+    @classmethod
     def fromjson(cls, jstree):
         if isinstance(jstree, str):
             return Node(jstree)
@@ -69,6 +77,8 @@ class Utils:
     @classmethod
     def prettyattrstr(cls, kind, value):
         return "{0} : {1}".format(kind, Utils.prettyprint(value))
+
+Utils.init()
 
 class Node:
     def __init__(self, text):
