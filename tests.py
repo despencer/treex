@@ -24,17 +24,17 @@ class TreexTest():
                 self.current = t
                 print("Running {0}".format(t["name"] ))
                 func(self, t)
-        print("Total good: {0}, failed: {1}".format(self.good, self.failed))
+        print("Total good: {0}, failed: {1}".format(self.good, self.fail))
 
     def assertTrue(self, value):
         if value:
+            self.good = self.good + 1
+        else:
             self.fail = self.fail + 1
             print("Test {0} failed".format(self.current["name"]))
-        else:
-            self.good = self.good + 1
 
     def assertFalse(self, value):
-        assertTrue(not value)
+        self.assertTrue(not value)
 
 if __name__ == '__main__':
     with open('tests.json') as jtests:

@@ -20,11 +20,11 @@ class Treex:
 class Selector:
     @classmethod
     def select(cls, treex, pattern):
-        logging.debug('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
+        logging.info('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
         res = cls.selectnode(treex, pattern)
         if res != None:
             res = res.groups
-        logging.debug('select returns with %s', res)
+        logging.info('select returns with %s', res)
         return res
 
     @classmethod
@@ -51,7 +51,7 @@ class Selector:
 class Utils:
     @classmethod
     def init(cls):
-        logging.basicConfig(filename='treex.log', filemode='w', level=logging.INFO, format='%(asctime)s %(levelname)s:%(message)s')
+        logging.basicConfig(filename='treex.log', filemode='w', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
 
     @classmethod
     def fromjson(cls, jstree):
@@ -61,6 +61,7 @@ class Utils:
             node = Node(jstree[0])
             for ch in jstree[1:]:
                 node.set(ch[0], cls.fromjson(ch[1]))
+            return node
 
     @classmethod
     def prettyprint(cls, treex):
@@ -70,7 +71,7 @@ class Utils:
 
     @classmethod
     def prettyattrs(cls, treex):
-        if count(treex.attributes) > 0:
+        if len(treex.attributes) > 0:
             return " [ {0} ]".format(" , ".join(cls.prettyattrstr(*x) for x in treex.attributes.items()))
         return ''
 
