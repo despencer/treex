@@ -46,6 +46,8 @@ class Selector:
                         return None
                     else:
                         found.append(res)
+                else:
+                    return None
         return found
 
 class Utils:
