@@ -10,14 +10,14 @@
 },
 {
  "type" : "negmirror",
- "active" : false,
+ "active" : true,
  "name" : "21",
  "source" : "name",
  "target" : "aname"
 },
 {
  "type" : "negmirror",
- "active" : false,
+ "active" : true,
  "name" : "22",
  "source" : [ "name", ["x" , "a"] ],
  "target" : [ "name", ["y" , "a"] ]

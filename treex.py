@@ -9,12 +9,11 @@ class Treex:
 
     @classmethod
     def fromjson(cls, jstree):
-        if isinstance(jstree, str):
-            return Node(jstree)
-        else:
-            node = Node(jstree[0])
-            for ch in jstree[1:]:
-                node.set(ch[0], cls.fromjson(ch[1]))
+        return Utils.fromjson(jstree)
+
+    @classmethod
+    def prettyprint(cls, treex):
+        return Utils.prettyprint(treex)
 
 class Selector:
     @classmethod
@@ -44,6 +43,32 @@ class Selector:
                     else:
                         found.append(res)
         return found
+
+class Utils:
+    @classmethod
+    def fromjson(cls, jstree):
+        if isinstance(jstree, str):
+            return Node(jstree)
+        else:
+            node = Node(jstree[0])
+            for ch in jstree[1:]:
+                node.set(ch[0], cls.fromjson(ch[1]))
+
+    @classmethod
+    def prettyprint(cls, treex):
+        pp = "{ " + treex.text
+        pp = pp + " [ {0} ] "
+        return "{{ {0}{1} }}".format( treex.text, cls.prettyattrs(treex) )
+
+    @classmethod
+    def prettyattrs(cls, treex):
+        if count(treex.attributes) > 0:
+            return " [ {0} ]".format(" , ".join(cls.prettyattrstr(*x) for x in treex.attributes.items()))
+        return ''
+
+    @classmethod
+    def prettyattrstr(cls, kind, value):
+        return "{0} : {1}".format(kind, Utils.prettyprint(value))
 
 class Node:
     def __init__(self, text):
