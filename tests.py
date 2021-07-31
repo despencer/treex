@@ -14,8 +14,13 @@ class TreexTest():
 
     def donegmirror(self, testdef):
         source = Treex.fromjson(testdef["source"])
-        target = Treex.fromjson(testdef["target"])
-        self.assertFalse(Treex.match(source, target))
+        query = Treex.fromjson(testdef["query"])
+        self.assertFalse(Treex.match(source, query))
+
+    def dosimple(self, testdef):
+        source = Treex.fromjson(testdef["source"])
+        query = Treex.fromjson(testdef["query"])
+        self.assertTrue(Treex.match(source, query))
 
     def run(self, tests):
         for t in tests:

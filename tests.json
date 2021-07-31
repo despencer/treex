@@ -9,17 +9,36 @@
  "source" : [ "name", ["x" , "a"] ]
 },
 {
+ "type" : "mirror",
+ "name" : "13",
+ "source" : 
+[ "name",
+    ["x" ,
+        ["u", 
+            ["1", "o"] ] ] ]
+},
+{
  "type" : "negmirror",
  "active" : true,
  "name" : "21",
  "source" : "name",
- "target" : "aname"
+ "query" : "aname"
 },
 {
  "type" : "negmirror",
  "active" : true,
  "name" : "22",
  "source" : [ "name", ["x" , "a"] ],
- "target" : [ "name", ["y" , "a"] ]
+ "query" : [ "name", ["y" , "a"] ]
+},
+{
+ "type" : "simple",
+ "name" : "31",
+ "source" : 
+[ "name",
+    ["x" ,
+        ["u", 
+            ["1", "o"] ] ] ],
+ "query" : [ "name", [ "x", "u" ] ]
 }
 ]

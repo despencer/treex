@@ -57,6 +57,7 @@ class Utils:
 
     @classmethod
     def fromjson(cls, jstree):
+        logging.debug('from json {0}'.format(jstree))
         if isinstance(jstree, str):
             return Node(jstree)
         else:
