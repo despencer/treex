@@ -19,6 +19,8 @@ class TreexTest():
 
     def dosimple(self, testdef):
         source = Treex.fromjson(testdef["source"])
+        if "srccontext" in testdef:
+            source = Treex.apply(Treex.fromjson(testdef["srccontext"]), source)
         query = Treex.fromjson(testdef["query"])
         self.assertTrue(Treex.match(source, query))
 

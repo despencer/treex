@@ -34,11 +34,26 @@
 {
  "type" : "simple",
  "name" : "31",
- "source" : 
+ "source" :
 [ "name",
     ["x" ,
         ["u", 
             ["1", "o"] ] ] ],
  "query" : [ "name", [ "x", "u" ] ]
+},
+{
+ "type" : "simple",
+ "name" : "32",
+ "srccontext" :
+[ "ctx",
+    [ "y" , "1" ],
+    [ "x" , "2" ] ],
+ "source" :
+[ "func",
+    ["x" , "3"] ],
+ "query" :
+[ "func",
+    [ "x", "3" ],
+    [ "y", "1" ] ]
 }
 ]

@@ -14,6 +14,10 @@ class Treex:
         return Utils.fromjson(jstree)
 
     @classmethod
+    def apply(cls, context, treex):
+        return Modifier.apply(context, treex)
+
+    @classmethod
     def prettyprint(cls, treex):
         return Utils.prettyprint(treex)
 
@@ -49,6 +53,28 @@ class Selector:
                 else:
                     return None
         return found
+
+class Modifier:
+    @classmethod
+    def apply(cls, context, treex):
+        return cls.applyinside(cls.copynode(context), treex)
+
+    @classmethod
+    def applyinside(cls, base, treex):
+        base.text = treex.text
+        for (kind, value) in treex.attributes.items():
+            if base.has(kind):
+                cls.applyinside(base.get(kind), value)
+            else:
+                base.set(kind, cls.copynode(value))
+        return base
+
+    @classmethod
+    def copynode(cls, node):
+        result = Node(node.text)
+        for (kind, value) in node.attributes.items():
+            result.set(kind, cls.copynode(value))
+        return result
 
 class Utils:
     @classmethod
@@ -91,6 +117,9 @@ class Node:
 
     def set(self, kind, value):
         self.attributes[kind] = value
+
+    def get(self, kind):
+        return self.attributes[kind]
 
     def has(self, kind):
         return kind in self.attributes
