@@ -33,8 +33,14 @@ class Selector:
 
     @classmethod
     def selectnode(cls, treex, pattern):
-        if treex.text != pattern.text:
-            return None
+        if pattern.text[0] == '$':
+            if pattern.text == '$any':
+                pass
+            else:
+                return None
+        else:
+            if treex.text != pattern.text:
+                return None
         return cls.selectattrs(treex, pattern)
 
     @classmethod
