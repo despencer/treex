@@ -24,6 +24,13 @@ class TreexTest():
         query = Treex.fromjson(testdef["query"])
         self.assertTrue(Treex.match(source, query))
 
+    def doselect(self, testdef):
+        source = Treex.fromjson(testdef["source"])
+        if "srccontext" in testdef:
+            source = Treex.apply(Treex.fromjson(testdef["srccontext"]), source)
+        query = Treex.fromjson(testdef["query"])
+        self.assertResult(Treex.select(source, query), testdef["result"])
+
     def run(self, tests):
         for t in tests:
             if ("active" not in t) or (t["active"]):
@@ -42,6 +49,20 @@ class TreexTest():
 
     def assertFalse(self, value):
         self.assertTrue(not value)
+
+    def assertResult(self, select, etalon):
+        if select is None:
+            self.assertTrue(False)
+            return
+        final = True
+        for group, value in etalon.items():
+            if group not in select:
+                final = False
+            else:
+                final = final and (value == select[group])
+        for group, _ in select.items():
+            final = final and (group in etalon)
+        self.assertTrue(final)
 
 if __name__ == '__main__':
     with open('tests.json') as jtests:

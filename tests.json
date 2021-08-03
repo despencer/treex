@@ -66,5 +66,18 @@
  "query" :
 [ "func",
     [ "x", "$any" ] ]
+},
+{
+ "type" : "select",
+ "name" : "41",
+ "source" :
+[ "func",
+    [ "x", "3" ],
+    [ "y", "1" ] ],
+ "query" :
+[ "func",
+    [ "x",
+        [ "$any", [ "$group", "x"] ] ] ],
+ "result": { "x" : [ "3" ]}
 }
 ]

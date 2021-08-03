@@ -41,14 +41,17 @@ class Selector:
         else:
             if treex.text != pattern.text:
                 return None
-        return cls.selectattrs(treex, pattern)
+        return cls.selectattrs(treex, pattern, MatchingContext(treex))
 
     @classmethod
-    def selectattrs(cls, treex, pattern):
+    def selectattrs(cls, treex, pattern, context):
         found = MatchingResult()
         for (kind, value) in pattern.attributes.items():
             if kind[0] == '$':
-                return None
+                if kind == '$group':
+                    found.appendgroup(value.text, context.node.text)
+                else:
+                    return None
             else:
                 if kind in treex.attributes:
                     res = cls.selectnode(treex.attributes[kind], value)
@@ -129,6 +132,10 @@ class Node:
 
     def has(self, kind):
         return kind in self.attributes
+
+class MatchingContext:
+    def __init__(self, node):
+        self.node = node
 
 class MatchingResult:
     def __init__(self):
