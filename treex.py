@@ -7,7 +7,7 @@ class Treex:
 
     @classmethod
     def select(cls, treex, pattern):
-        return Selector.select(treex, pattern)
+        return Selector.select(treex, Selector.prepare(pattern))
 
     @classmethod
     def fromjson(cls, jstree):
@@ -32,7 +32,15 @@ class Selector:
         return res
 
     @classmethod
+    def prepare(cls, rawpat):
+        logging.debug('prepare raw pattern')
+        pattern = Modifier.copynode(rawpat)
+        Modifier.resolverefs(pattern)
+        return pattern
+
+    @classmethod
     def selectnode(cls, treex, pattern):
+        logging.debug('select node %s with %s', treex.text, pattern.text)
         if pattern.text[0] == '$':
             if pattern.text == '$any':
                 pass
@@ -45,13 +53,22 @@ class Selector:
 
     @classmethod
     def selectattrs(cls, treex, pattern, context):
+        logging.debug('select attrs %s with %s', treex.text, pattern.text)
         found = MatchingResult()
         for (kind, value) in pattern.attributes.items():
+            logging.debug('checking attr %s:%s', kind, Utils.prettyprint(value))
             if kind[0] == '$':
                 if kind == '$group':
                     found.appendgroup(value.text, context.node.text)
+                elif kind == '$ref':
+                    res = cls.selectattrs(treex, value, MatchingContext(value))
+                    if res == None:
+                        return None
+                    else:
+                        found.append(res)
                 else:
-                    return None
+                    if kind not in ('$anchor','$optional'):
+                        return None
             else:
                 if kind in treex.attributes:
                     res = cls.selectnode(treex.attributes[kind], value)
@@ -60,7 +77,9 @@ class Selector:
                     else:
                         found.append(res)
                 else:
-                    return None
+                    if not value.has('$optional'):
+                        return None
+        logging.debug('returns with %s found', found.groups)
         return found
 
 class Modifier:
@@ -85,6 +104,18 @@ class Modifier:
             result.set(kind, cls.copynode(value))
         return result
 
+    @classmethod
+    def resolverefs(cls, treex):
+        anchors = {}
+        for kind, val, parent in Utils.allvalues('', treex, None):
+            logging.debug("Resolving '%s':'%s'", kind, val)
+            if kind == '$anchor':
+                logging.debug("Anchor %s to %s detected", val, parent.text)
+                anchors[val] = parent
+            if kind == '$ref':
+                logging.debug("Reference %s at %s detected", val, parent.text)
+                parent.set(kind, anchors[val])
+
 class Utils:
     @classmethod
     def init(cls):
@@ -103,9 +134,15 @@ class Utils:
 
     @classmethod
     def prettyprint(cls, treex):
-        pp = "{ " + treex.text
-        pp = pp + " [ {0} ] "
+#        pp = "{ " + treex.text
+#        pp = pp + " [ {0} ] "
         return "{{ {0}{1} }}".format( treex.text, cls.prettyattrs(treex) )
+
+    @classmethod
+    def allvalues(cls, attr, node, parent):
+        yield (attr, node.text, parent)
+        for kind, value in node.attributes.items():
+            yield from cls.allvalues(kind, value, node)
 
     @classmethod
     def prettyattrs(cls, treex):
@@ -115,7 +152,7 @@ class Utils:
 
     @classmethod
     def prettyattrstr(cls, kind, value):
-        return "{0} : {1}".format(kind, Utils.prettyprint(value))
+        return "{0}:{1}".format(kind, value.text if kind == '$ref' else Utils.prettyprint(value))
 
 Utils.init()
 

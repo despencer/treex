@@ -79,5 +79,33 @@
     [ "x",
         [ "$any", [ "$group", "x"] ] ] ],
  "result": { "x" : [ "3" ]}
+},
+{
+ "type" : "select",
+ "name" : "42",
+ "source" :
+[ "func", [ "args",
+    [ "arg", [ "name", "x" ], [ "value", "3" ], [ "and",
+        [ "arg", [ "name", "x" ], [ "value", "5" ] ] ] ] ] ],
+ "query" :
+[ "func", [ "args",
+    [ "arg", [ "name",
+        [ "$any", [ "$group", "name"] ] ] ] ] ],
+ "result": { "name" : [ "x" ]}
+},
+{
+ "type" : "select",
+ "name" : "43",
+ "source" :
+[ "func", [ "args",
+    [ "arg", [ "name", "x" ], [ "value", "3" ], [ "and",
+        [ "arg", [ "name", "y" ], [ "value", "5" ] ] ] ] ] ],
+ "query" :
+[ "func", [ "args",
+    [ "arg", [ "name",
+        [ "$any", [ "$group", "name"] ] ],
+    [ "$anchor", "arg" ],
+    [ "and", [ "arg", [ "$optional", "$true" ] , [ "$ref", "arg" ] ] ] ] ] ],
+ "result": { "name" : [ "x", "y" ]}
 }
 ]
