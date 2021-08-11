@@ -25,9 +25,9 @@ class Selector:
     @classmethod
     def select(cls, treex, pattern):
         logging.info('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
-        res = cls.selectnode(treex, pattern)
-        if res != None:
-            res = res.groups
+        ctx = MatchingContext()
+        cls.selectnode(treex, pattern, ctx)
+        res = ctx.groups if ctx.isgood() else None
         logging.info('select returns with %s', res)
         return res
 
@@ -39,62 +39,39 @@ class Selector:
         return pattern
 
     @classmethod
-    def selectnode(cls, treex, pattern):
+    def selectnode(cls, treex, pattern, ctx):
         logging.debug('select node %s with %s', treex.text, pattern.text)
         if pattern.text[0] == '$':
             if pattern.text == '$any':
                 pass
             else:
-                return None
+                ctx.setbad()
         else:
             if treex.text != pattern.text:
-                return None
-        found = MatchingResult()
-        if pattern.has('$group'):
-            found.appendgroup(pattern.get('$group').text, treex.text)
-        if pattern.has('$ref'):
-            res = cls.selectattrs(treex, pattern.get('$ref'))
-            if res == None:
-                return None
-            else:
-                found.append(res)
-        res = cls.selectattrs(treex, pattern)
-        if res == None:
-            return None
-        else:
-            found.append(res)
-        return found
+                ctx.setbad()
+        if ctx.isgood():
+            if pattern.has('$group'):
+                ctx.appendgroup(pattern.get('$group').text, treex.text)
+            if pattern.has('$ref'):
+               cls.selectattrs(treex, pattern.get('$ref'), ctx)
+        if ctx.isgood():
+            cls.selectattrs(treex, pattern, ctx)
 
     @classmethod
-    def selectattrs(cls, treex, pattern):
+    def selectattrs(cls, treex, pattern, ctx):
         logging.debug('select attrs %s with %s', treex.text, pattern.text)
-        found = MatchingResult()
         for (kind, value) in pattern.attributes.items():
             logging.debug('checking attr %s:%s', kind, Utils.prettyprint(value))
             if kind[0] == '$':
-#                if kind == '$group':
-#                    found.appendgroup(value.text, context.node.text)
-#                if kind == '$ref':
-#                    res = cls.selectattrs(treex, value, MatchingContext(value))
-#                    if res == None:
-#                        return None
-#                    else:
-#                        found.append(res)
-#                else:
-                    if kind not in ('$anchor','$optional','$super','$group','$ref'):
-                        return None
+                if kind not in ('$anchor','$optional','$super','$group','$ref'):
+                    ctx.setbad()
             else:
                 if kind in treex.attributes:
-                    res = cls.selectnode(treex.attributes[kind], value)
-                    if res == None:
-                        return None
-                    else:
-                        found.append(res)
+                    cls.selectnode(treex.attributes[kind], value, ctx)
                 else:
                     if not value.has('$optional'):
-                        return None
-        logging.debug('returns with %s found', found.groups)
-        return found
+                        ctx.setbad()
+        logging.debug('returns with ctx %s of %s found', ctx.isgood(), ctx.groups)
 
 class Modifier:
     @classmethod
@@ -148,8 +125,6 @@ class Utils:
 
     @classmethod
     def prettyprint(cls, treex):
-#        pp = "{ " + treex.text
-#        pp = pp + " [ {0} ] "
         return "{{ {0}{1} }}".format( treex.text, cls.prettyattrs(treex) )
 
     @classmethod
@@ -185,12 +160,15 @@ class Node:
         return kind in self.attributes
 
 class MatchingContext:
-    def __init__(self, node):
-        self.node = node
-
-class MatchingResult:
     def __init__(self):
+        self.good = True
         self.groups = { }
+
+    def isgood(self):
+        return self.good
+
+    def setbad(self):
+        self.good = False
 
     def appendgroup(self, name, value):
         if name in self.groups:
