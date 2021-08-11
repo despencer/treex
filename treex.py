@@ -175,10 +175,3 @@ class MatchingContext:
             self.groups[name].append(value)
         else:
             self.groups[name] = [ value ]
-
-    def append(self, result):
-        for (name, value) in result.groups.items():
-            if name in self.groups:
-                self.groups[name].extend(value)
-            else:
-                self.groups[name] = value
