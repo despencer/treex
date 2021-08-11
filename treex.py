@@ -52,6 +52,12 @@ class Selector:
         found = MatchingResult()
         if pattern.has('$group'):
             found.appendgroup(pattern.get('$group').text, treex.text)
+        if pattern.has('$ref'):
+            res = cls.selectattrs(treex, pattern.get('$ref'), MatchingContext(pattern.get('$ref').text))
+            if res == None:
+                return None
+            else:
+                found.append(res)
         res = cls.selectattrs(treex, pattern, MatchingContext(treex))
         if res == None:
             return None
@@ -68,14 +74,14 @@ class Selector:
             if kind[0] == '$':
 #                if kind == '$group':
 #                    found.appendgroup(value.text, context.node.text)
-                if kind == '$ref':
-                    res = cls.selectattrs(treex, value, MatchingContext(value))
-                    if res == None:
-                        return None
-                    else:
-                        found.append(res)
-                else:
-                    if kind not in ('$anchor','$optional','$super','$group'):
+#                if kind == '$ref':
+#                    res = cls.selectattrs(treex, value, MatchingContext(value))
+#                    if res == None:
+#                        return None
+#                    else:
+#                        found.append(res)
+#                else:
+                    if kind not in ('$anchor','$optional','$super','$group','$ref'):
                         return None
             else:
                 if kind in treex.attributes:
