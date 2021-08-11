@@ -49,7 +49,15 @@ class Selector:
         else:
             if treex.text != pattern.text:
                 return None
-        return cls.selectattrs(treex, pattern, MatchingContext(treex))
+        found = MatchingResult()
+        if pattern.has('$group'):
+            found.appendgroup(pattern.get('$group').text, treex.text)
+        res = cls.selectattrs(treex, pattern, MatchingContext(treex))
+        if res == None:
+            return None
+        else:
+            found.append(res)
+        return found
 
     @classmethod
     def selectattrs(cls, treex, pattern, context):
@@ -58,16 +66,16 @@ class Selector:
         for (kind, value) in pattern.attributes.items():
             logging.debug('checking attr %s:%s', kind, Utils.prettyprint(value))
             if kind[0] == '$':
-                if kind == '$group':
-                    found.appendgroup(value.text, context.node.text)
-                elif kind == '$ref':
+#                if kind == '$group':
+#                    found.appendgroup(value.text, context.node.text)
+                if kind == '$ref':
                     res = cls.selectattrs(treex, value, MatchingContext(value))
                     if res == None:
                         return None
                     else:
                         found.append(res)
                 else:
-                    if kind not in ('$anchor','$optional'):
+                    if kind not in ('$anchor','$optional','$super','$group'):
                         return None
             else:
                 if kind in treex.attributes:

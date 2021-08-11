@@ -125,5 +125,23 @@
         [ "$anchor", "prop" ],
         [ "and", [ "prop", [ "$optional", "$true" ] , [ "$ref", "prop" ] ] ] ] ] ],
  "result": { "arg" : ["x"],  "kind" : ["type", "value"], "value" : ["int", "8"] }
+},
+{
+ "type" : "select",
+ "name" : "45",
+ "source" :
+[ "arg", [ "name", "x" ], ["props",
+    [ "prop", [ "kind", "type" ], [ "value", "int" ], [ "and",
+        [ "prop", ["kind", "value"], [ "value", "8"] ] ] ] ] ],
+ "query" :
+[ "arg", [ "name",
+    [ "$any", [ "$group", "arg" ] ] ],
+    [ "props",
+        [ "prop", [ "kind",
+            [ "$any", [ "$group", "kind" ], [ "$super", "arg"] ] ],
+        [ "value", [ "$any", [ "$group", "value" ], [ "$super", "arg"] ] ],
+        [ "$anchor", "prop" ],
+        [ "and", [ "prop", [ "$optional", "$true" ] , [ "$ref", "prop" ] ] ] ] ] ],
+ "result": { "arg" : [ { "arg" : ["x"], "kind" : ["type", "value"], "value" : ["int", "8"] } ] }
 }
 ]
