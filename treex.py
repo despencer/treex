@@ -53,12 +53,12 @@ class Selector:
         if pattern.has('$group'):
             found.appendgroup(pattern.get('$group').text, treex.text)
         if pattern.has('$ref'):
-            res = cls.selectattrs(treex, pattern.get('$ref'), MatchingContext(pattern.get('$ref').text))
+            res = cls.selectattrs(treex, pattern.get('$ref'))
             if res == None:
                 return None
             else:
                 found.append(res)
-        res = cls.selectattrs(treex, pattern, MatchingContext(treex))
+        res = cls.selectattrs(treex, pattern)
         if res == None:
             return None
         else:
@@ -66,7 +66,7 @@ class Selector:
         return found
 
     @classmethod
-    def selectattrs(cls, treex, pattern, context):
+    def selectattrs(cls, treex, pattern):
         logging.debug('select attrs %s with %s', treex.text, pattern.text)
         found = MatchingResult()
         for (kind, value) in pattern.attributes.items():
