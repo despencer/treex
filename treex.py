@@ -186,7 +186,7 @@ class MatchingContext:
         logging.debug('leaving group %s', name)
         if not self.good or name == None:
             return
-        self.groups.pop(name)
+#        self.groups.pop(name)
 
     def root(self):
         return self.groups['$root'].toresult()[0] if self.good else None
