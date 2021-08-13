@@ -27,7 +27,7 @@ class Selector:
         logging.info('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
         ctx = MatchingContext()
         cls.selectnode(treex, pattern, ctx)
-        res = ctx.groups if ctx.isgood() else None
+        res = ctx.root()
         logging.info('select returns with %s', res)
         return res
 
@@ -42,20 +42,22 @@ class Selector:
     def selectnode(cls, treex, pattern, ctx):
         logging.debug('select node %s with %s', treex.text, pattern.text)
         if pattern.text[0] == '$':
-            if pattern.text == '$any':
-                pass
-            else:
+            if not pattern.text == '$any':
                 ctx.setbad()
         else:
             if treex.text != pattern.text:
                 ctx.setbad()
+        group = None
         if ctx.isgood():
             if pattern.has('$group'):
-                ctx.appendgroup(pattern.get('$group').text, treex.text)
+                spr = pattern.get('$super').text if pattern.has('$super') else '$root'
+                group = pattern.get('$group').text
+                ctx.appendgroup(group, treex.text, spr)
             if pattern.has('$ref'):
                cls.selectattrs(treex, pattern.get('$ref'), ctx)
         if ctx.isgood():
             cls.selectattrs(treex, pattern, ctx)
+        ctx.leavegroup(group)
 
     @classmethod
     def selectattrs(cls, treex, pattern, ctx):
@@ -162,7 +164,7 @@ class Node:
 class MatchingContext:
     def __init__(self):
         self.good = True
-        self.groups = { }
+        self.groups = { '$root' : MatchingGroup() }
 
     def isgood(self):
         return self.good
@@ -170,8 +172,44 @@ class MatchingContext:
     def setbad(self):
         self.good = False
 
-    def appendgroup(self, name, value):
-        if name in self.groups:
-            self.groups[name].append(value)
+    def appendgroup(self, name, value, spr):
+        logging.debug('append group %s with %s, super %s all groups %s', name, value, spr, self.groups)
+        if spr not in self.groups:
+            self.groups[spr] = self.groups['$root'].addgroup(spr)
+        group = self.groups[spr].addgroup(name)
+        group.append(value)
+        self.groups[name] = group
+        logging.debug('group appended, groups %s', self.groups)
+
+    def leavegroup(self, name):
+        logging.debug('leaving group %s', name)
+        if not self.good or name == None:
+            return
+        self.groups.pop(name)
+
+    def root(self):
+        return self.groups['$root'].toresult() if self.good else None
+
+class MatchingGroup:
+    def __init__(self):
+        self.values = [ ]
+        self.members = {}
+
+    def append(self, value):
+        self.values.append(value)
+
+    def addgroup(self, name):
+        if name not in self.members:
+            self.members[name] = MatchingGroup()
+        return self.members[name]
+
+    def toresult(self):
+        if len(self.members) > 0:
+            result = {}
+            for name, value in self.members.items():
+                result[name] = value.toresult()
+            if len(self.values) > 0:
+                result['$'] = self.values
+            return result
         else:
-            self.groups[name] = [ value ]
+            return self.values
