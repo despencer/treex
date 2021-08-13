@@ -159,5 +159,27 @@
         [ "$anchor", "prop" ],
         [ "and", [ "prop", [ "$optional", "$true" ] , [ "$ref", "prop" ] ] ] ] ] ],
  "result": { "arg" : [ { "$" : ["arg"], "kind" : [ { "$" : ["type"], "value" : ["int"] } , { "$" : ["value"], "value" : ["8"] } ] } ] }
+},
+{
+ "type" : "select",
+ "name" : "47",
+ "source" :
+[ "arg", [ "name", "x" ], ["props",
+    [ "prop", [ "kind", "type" ], [ "value", "int" ], [ "and",
+        [ "prop", ["kind", "value"], [ "value", "8"] ] ] ] ], [ "and",
+    [ "arg", [ "name", "y" ], ["props",
+        [ "prop", [ "kind", "type" ], [ "value", "str" ], [ "and",
+           [ "prop", ["kind", "value"], [ "value", "zz"] ] ] ] ] ] ] ],
+ "query" :
+[ "arg", [ "$group", "arg" ], [ "name", "$any" ], [ "$anchor", "arg" ],
+    [ "props",
+        [ "prop", [ "kind",
+            [ "$any", [ "$group", "kind" ], [ "$super", "arg"] ] ],
+        [ "value", [ "$any", [ "$group", "value" ], [ "$super", "kind"] ] ],
+        [ "$anchor", "prop" ],
+        [ "and", [ "prop", [ "$optional", "$true" ] , [ "$ref", "prop" ] ] ] ] ],
+    [ "and", [ "arg", [ "$optional", "$true" ] , [ "$ref", "arg" ] ] ] ],
+ "result": { "arg" : [ { "$" : ["arg"], "kind" : [ { "$" : ["type"], "value" : ["int"] } , { "$" : ["value"], "value" : ["8"] } ] },
+                       { "$" : ["arg"], "kind" : [ { "$" : ["type"], "value" : ["str"] } , { "$" : ["value"], "value" : ["zz"] } ] } ] }
 }
 ]

@@ -54,7 +54,7 @@ class Selector:
                 group = pattern.get('$group').text
                 ctx.appendgroup(group, treex.text, spr)
             if pattern.has('$ref'):
-               cls.selectattrs(treex, pattern.get('$ref'), ctx)
+               cls.selectnode(treex, pattern.get('$ref'), ctx)
         if ctx.isgood():
             cls.selectattrs(treex, pattern, ctx)
         ctx.leavegroup(group)
