@@ -165,6 +165,7 @@ class MatchingContext:
     def __init__(self):
         self.good = True
         self.groups = { '$root' : MatchingGroup() }
+        self.groups['$root'].makeroot()
 
     def isgood(self):
         return self.good
@@ -188,28 +189,46 @@ class MatchingContext:
         self.groups.pop(name)
 
     def root(self):
-        return self.groups['$root'].toresult() if self.good else None
+        return self.groups['$root'].toresult()[0] if self.good else None
 
 class MatchingGroup:
     def __init__(self):
         self.values = [ ]
-        self.members = {}
+        self.simple = True
 
     def append(self, value):
-        self.values.append(value)
+        if self.simple:
+            self.values.append( value )
+        else:
+            self.values.append( { '$' : [value] } )
 
     def addgroup(self, name):
-        if name not in self.members:
-            self.members[name] = MatchingGroup()
-        return self.members[name]
+        if self.simple:
+            self.convert()
+        members = self.values[-1]
+        if name not in members:
+            members[name] = MatchingGroup()
+        return members[name]
+
+    def convert(self):
+        for i in range(0, len(self.values)):
+            self.values[i] = { '$' : [ self.values[i] ] }
+        self.simple = False
+
+    def makeroot(self):
+        self.values = [ { } ]
+        self.simple = False
 
     def toresult(self):
-        if len(self.members) > 0:
-            result = {}
-            for name, value in self.members.items():
-                result[name] = value.toresult()
-            if len(self.values) > 0:
-                result['$'] = self.values
-            return result
-        else:
+        if self.simple:
             return self.values
+        result = []
+        for x in self.values:
+            item = {}
+            for name, value in x.items():
+                item[name] = value if name == '$' else value.toresult()
+            result.append(item)
+        return result
+
+    def __repr__(self):
+        return str(self.values)
