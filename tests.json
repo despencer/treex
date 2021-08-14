@@ -194,5 +194,18 @@
 { "arg" : [ "x" ] },
  "result" :
 [ "arg", [ "name", "x" ] ]
+},
+{
+ "type" : "construct",
+ "name" : "62",
+ "template" :
+[ "$serial", [ "$item",
+    [ "arg", [ "name", "$set" ] ] ],
+    [ "$join", [ "$proxy",  [ "and", "$set" ] ] ],
+    [ "$group", "arg"] ],
+ "argument" :
+{ "arg" : [ "x", "y" ] },
+ "result" :
+[ "arg", [ "name", "x" ], [ "and", [ "arg", [ "name", "y" ] ] ] ]
 }
 ]

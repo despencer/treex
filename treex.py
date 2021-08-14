@@ -123,12 +123,16 @@ class Constructor:
 
     @classmethod
     def constructnode(cls, template, argument):
+        logging.debug('Constructing node for %s with %s', Utils.prettyprint(template), argument)
         result = Node(template.text)
         if template.text[0] == '$':
             if template.text == '$serial':
                 return cls.serial(template, argument)
         if template.text == '$set':
-            result.text = argument
+            if isinstance(argument, Node):
+                result = argument
+            else:
+                result.text = argument
         for kind, value in template.attributes.items():
             if value == '$set':
                   value = argument
@@ -146,8 +150,8 @@ class Constructor:
         result = cls.constructnode( template.get('$item'), group[0] )
         node = result
         for i in range(1, len(group)):
-            child = cls.construct( template.get('$item'), group[i] )
-            join = cls.construct( template.get('$join'), child )
+            child = cls.constructnode( template.get('$item'), group[i] )
+            join = cls.constructnode( template.get('$join'), child )
             for kind, value in join.attributes.items():
                 node.set( kind, value)
             node = child
