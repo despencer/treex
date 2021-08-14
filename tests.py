@@ -31,6 +31,11 @@ class TreexTest():
         query = Treex.fromjson(testdef["query"])
         self.assertResult(Treex.select(source, query), testdef["result"])
 
+    def doconstruct(self, testdef):
+        template = Treex.fromjson(testdef["template"])
+        argument = Treex.fromjson(testdef["argument"])
+        self.assertResult(Treex.construct(template, argument), testdef["result"])
+
     def run(self, tests):
         for t in tests:
             if ("active" not in t) or (t["active"]):

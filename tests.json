@@ -181,5 +181,18 @@
     [ "and", [ "arg", [ "$optional", "$true" ] , [ "$ref", "arg" ] ] ] ],
  "result": { "arg" : [ { "$" : ["arg"], "kind" : [ { "$" : ["type"], "value" : ["int"] } , { "$" : ["value"], "value" : ["8"] } ] },
                        { "$" : ["arg"], "kind" : [ { "$" : ["type"], "value" : ["str"] } , { "$" : ["value"], "value" : ["zz"] } ] } ] }
+},
+{
+ "type" : "construct",
+ "name" : "61",
+ "template" :
+[ "$serial", [ "$item",
+    [ "arg", [ "name", "$set" ] ] ],
+    [ "$join", [ "and", "$set" ] ],
+    [ "$group", "arg"] ],
+ "argument" :
+[ { "arg" : [ "x" ] } ],
+ "result" :
+[ "arg", [ "name", "x" ] ]
 }
 ]
