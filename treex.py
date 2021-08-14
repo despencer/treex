@@ -10,6 +10,10 @@ class Treex:
         return Selector.select(treex, Selector.prepare(pattern))
 
     @classmethod
+    def construct(cls, template, argument):
+        return Constructor.construct(template, argument)
+
+    @classmethod
     def fromjson(cls, jstree):
         return Utils.fromjson(jstree)
 
@@ -108,6 +112,38 @@ class Modifier:
             if kind == '$ref':
                 logging.debug("Reference %s at %s detected", val, parent.text)
                 parent.set(kind, anchors[val])
+
+class Constructor:
+    @classmethod
+    def construct(cls, template, argument):
+        result = Node(template.text)
+        if template.text[0] == '$':
+            if template.text == '$serial':
+                return cls.serial(template, argument)
+        if template.text == '$set':
+            result.text = argument
+        for kind, value in template.attributes.items():
+            if value == '$set':
+                  value = argument
+            else:
+                  value = cls.construct(value, argument)
+            result.set( kind, value)
+        return result
+
+    @classmethod
+    def serial(cls, template, argument):
+        group = argument[template.get('$group')]
+        if len(group) == 0:
+            return None
+        result = cls.construct( template.get('$item'), group[0] )
+        node = result
+        for i in range(1, len(group)):
+            child = cls.construct( template.get('$item'), group[i] )
+            join = cls.construct( template.get('$join'), child )
+            for kind, value in join.attributes.items():
+                node.set( kind, value)
+            node = child
+        return result
 
 class Utils:
     @classmethod

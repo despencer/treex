@@ -188,7 +188,7 @@
  "template" :
 [ "$serial", [ "$item",
     [ "arg", [ "name", "$set" ] ] ],
-    [ "$join", [ "and", "$set" ] ],
+    [ "$join", [ "$proxy",  [ "and", "$set" ] ] ],
     [ "$group", "arg"] ],
  "argument" :
 [ { "arg" : [ "x" ] } ],
