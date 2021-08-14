@@ -47,16 +47,18 @@ class TreexTest():
     def assertTrue(self, value):
         if value:
             self.good = self.good + 1
+            return True
         else:
             self.fail = self.fail + 1
             print("Test {0} failed".format(self.current["name"]))
+            return False
 
     def assertFalse(self, value):
-        self.assertTrue(not value)
+        return self.assertTrue(not value)
 
     def assertEqual(self, treex, etalon):
-        self.assertTrue(Treex.match(treex, etalon))
-        self.assertTrue(Treex.match(etalon, treex))
+        if self.assertTrue(Treex.match(treex, etalon)):
+            self.assertTrue(Treex.match(etalon, treex))
 
     def assertResult(self, select, etalon):
         if select is None:
