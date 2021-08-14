@@ -191,7 +191,7 @@
     [ "$join", [ "$proxy",  [ "and", "$set" ] ] ],
     [ "$group", "arg"] ],
  "argument" :
-[ { "arg" : [ "x" ] } ],
+{ "arg" : [ "x" ] },
  "result" :
 [ "arg", [ "name", "x" ] ]
 }

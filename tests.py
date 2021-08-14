@@ -33,8 +33,7 @@ class TreexTest():
 
     def doconstruct(self, testdef):
         template = Treex.fromjson(testdef["template"])
-        argument = Treex.fromjson(testdef["argument"])
-        self.assertResult(Treex.construct(template, argument), testdef["result"])
+        self.assertEqual(Treex.construct(template, testdef["argument"]), Treex.fromjson(testdef["result"]))
 
     def run(self, tests):
         for t in tests:
@@ -54,6 +53,10 @@ class TreexTest():
 
     def assertFalse(self, value):
         self.assertTrue(not value)
+
+    def assertEqual(self, treex, etalon):
+        self.assertTrue(Treex.match(treex, etalon))
+        self.assertTrue(Treex.match(etalon, treex))
 
     def assertResult(self, select, etalon):
         if select is None:

@@ -116,6 +116,13 @@ class Modifier:
 class Constructor:
     @classmethod
     def construct(cls, template, argument):
+        logging.info('Constructing for %s with %s', Utils.prettyprint(template), argument)
+        result = cls.constructnode(template, argument)
+        logging.info('Constructing result %s', Utils.prettyprint(result))
+        return result
+
+    @classmethod
+    def constructnode(cls, template, argument):
         result = Node(template.text)
         if template.text[0] == '$':
             if template.text == '$serial':
@@ -126,16 +133,17 @@ class Constructor:
             if value == '$set':
                   value = argument
             else:
-                  value = cls.construct(value, argument)
+                  value = cls.constructnode(value, argument)
             result.set( kind, value)
         return result
 
     @classmethod
     def serial(cls, template, argument):
-        group = argument[template.get('$group')]
+        logging.debug('Constructing serial for %s with %s', Utils.prettyprint(template), argument)
+        group = argument[template.get('$group').text]
         if len(group) == 0:
             return None
-        result = cls.construct( template.get('$item'), group[0] )
+        result = cls.constructnode( template.get('$item'), group[0] )
         node = result
         for i in range(1, len(group)):
             child = cls.construct( template.get('$item'), group[i] )
