@@ -207,5 +207,17 @@
 { "arg" : [ "x", "y" ] },
  "result" :
 [ "arg", [ "name", "x" ], [ "and", [ "arg", [ "name", "y" ] ] ] ]
+},
+{
+ "type" : "construct",
+ "name" : "63",
+ "template" :
+[ "arg",
+    [ "name", [ "$set", [ "$group", "name" ] ],
+    [ "type", [ "$set", [ "$group", "type" ] ] ] ] ],
+ "argument" :
+{ "name" : [ "x" ], "type" : [ "int" ] },
+ "result" :
+[ "arg", [ "name", "x" ], [ "type", "int" ] ]
 }
 ]
