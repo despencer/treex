@@ -132,13 +132,17 @@ class Constructor:
             if isinstance(argument, Node):
                 result = argument
             else:
-                result.text = argument
+                if template.has('$group'):
+                    result.text = argument[template.get('$group').text][0]
+                else:
+                    result.text = argument
         for kind, value in template.attributes.items():
-            if value == '$set':
-                  value = argument
-            else:
-                  value = cls.constructnode(value, argument)
-            result.set( kind, value)
+            if kind not in ('$group'):
+                if value == '$set':
+                      value = argument
+                else:
+                      value = cls.constructnode(value, argument)
+                result.set( kind, value)
         return result
 
     @classmethod

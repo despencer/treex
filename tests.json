@@ -213,8 +213,8 @@
  "name" : "63",
  "template" :
 [ "arg",
-    [ "name", [ "$set", [ "$group", "name" ] ],
-    [ "type", [ "$set", [ "$group", "type" ] ] ] ] ],
+    [ "name", [ "$set", [ "$group", "name" ] ] ],
+    [ "type", [ "$set", [ "$group", "type" ] ] ] ],
  "argument" :
 { "name" : [ "x" ], "type" : [ "int" ] },
  "result" :
