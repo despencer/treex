@@ -225,7 +225,7 @@
  "name" : "64",
  "template" :
 [ "$serial", [ "$item",
-    [ "arg", [ "name", "$set", [ "$group", "name" ] ] ] ],
+    [ "arg", [ "name", [ "$set", [ "$group", "name" ] ] ] ] ],
     [ "$join", [ "$proxy",  [ "and", "$set" ] ] ],
     [ "$group", "arg"] ],
  "argument" :
