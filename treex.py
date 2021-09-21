@@ -28,23 +28,23 @@ class Treex:
 class Selector:
     @classmethod
     def select(cls, treex, pattern):
-        logging.info('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
+        Utils.logger.info('select called for %s with %s', Utils.prettyprint(treex), Utils.prettyprint(pattern) )
         ctx = MatchingContext()
         cls.selectnode(treex, pattern, ctx)
         res = ctx.root()
-        logging.info('select returns with %s', res)
+        Utils.logger.info('select returns with %s', res)
         return res
 
     @classmethod
     def prepare(cls, rawpat):
-        logging.debug('prepare raw pattern')
+        Utils.logger.debug('prepare raw pattern')
         pattern = Modifier.copynode(rawpat)
         Modifier.resolverefs(pattern)
         return pattern
 
     @classmethod
     def selectnode(cls, treex, pattern, ctx):
-        logging.debug('select node %s with %s', treex.text, pattern.text)
+        Utils.logger.debug('select node %s with %s', treex.text, pattern.text)
         if pattern.text[0] == '$':
             if not pattern.text == '$any':
                 ctx.setbad()
@@ -65,9 +65,9 @@ class Selector:
 
     @classmethod
     def selectattrs(cls, treex, pattern, ctx):
-        logging.debug('select attrs %s with %s', treex.text, pattern.text)
+        Utils.logger.debug('select attrs %s with %s', treex.text, pattern.text)
         for (kind, value) in pattern.attributes.items():
-            logging.debug('checking attr %s:%s', kind, Utils.prettyprint(value))
+            Utils.logger.debug('checking attr %s:%s', kind, Utils.prettyprint(value))
             if kind[0] == '$':
                 if kind not in ('$anchor','$optional','$super','$group','$ref'):
                     ctx.setbad()
@@ -77,7 +77,7 @@ class Selector:
                 else:
                     if not value.has('$optional'):
                         ctx.setbad()
-        logging.debug('returns with ctx %s of %s found', ctx.isgood(), ctx.groups)
+        Utils.logger.debug('returns with ctx %s of %s found', ctx.isgood(), ctx.groups)
 
 class Modifier:
     @classmethod
@@ -105,25 +105,25 @@ class Modifier:
     def resolverefs(cls, treex):
         anchors = {}
         for kind, val, parent in Utils.allvalues('', treex, None):
-            logging.debug("Resolving '%s':'%s'", kind, val)
+            Utils.logger.debug("Resolving '%s':'%s'", kind, val)
             if kind == '$anchor':
-                logging.debug("Anchor %s to %s detected", val, parent.text)
+                Utils.logger.debug("Anchor %s to %s detected", val, parent.text)
                 anchors[val] = parent
             if kind == '$ref':
-                logging.debug("Reference %s at %s detected", val, parent.text)
+                Utils.logger.debug("Reference %s at %s detected", val, parent.text)
                 parent.set(kind, anchors[val])
 
 class Constructor:
     @classmethod
     def construct(cls, template, argument):
-        logging.info('Constructing for %s with %s', Utils.prettyprint(template), argument)
+        Utils.logger.info('Constructing for %s with %s', Utils.prettyprint(template), argument)
         result = cls.constructnode(template, argument)
-        logging.info('Constructing result %s', Utils.prettyprint(result))
+        Utils.logger.info('Constructing result %s', Utils.prettyprint(result))
         return result
 
     @classmethod
     def constructnode(cls, template, argument):
-        logging.debug('Constructing node for %s with %s', Utils.prettyprint(template), argument)
+        Utils.logger.debug('Constructing node for %s with %s', Utils.prettyprint(template), argument)
         result = Node(template.text)
         if template.text[0] == '$':
             if template.text == '$serial':
@@ -147,7 +147,7 @@ class Constructor:
 
     @classmethod
     def serial(cls, template, argument):
-        logging.debug('Constructing serial for %s with %s', Utils.prettyprint(template), argument)
+        Utils.logger.debug('Constructing serial for %s with %s', Utils.prettyprint(template), argument)
         group = argument[template.get('$group').text]
         if len(group) == 0:
             return None
@@ -164,11 +164,17 @@ class Constructor:
 class Utils:
     @classmethod
     def init(cls):
-        logging.basicConfig(filename='treex.log', filemode='w', level=logging.DEBUG, format='%(asctime)s %(levelname)s:%(message)s')
+        if not hasattr(cls, "logger"):
+            name = "treex"
+            cls.logger = logging.getLogger(name)
+            cls.logger.setLevel(logging.DEBUG)
+            fh = logging.FileHandler( name + '.log', mode='w')
+            fh.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(message)s'))
+            cls.logger.addHandler(fh)
 
     @classmethod
     def fromjson(cls, jstree):
-        logging.debug('from json {0}'.format(jstree))
+        Utils.logger.debug('from json {0}'.format(jstree))
         if isinstance(jstree, str):
             return Node(jstree)
         else:
@@ -226,16 +232,16 @@ class MatchingContext:
         self.good = False
 
     def appendgroup(self, name, value, spr):
-        logging.debug('append group %s with %s, super %s all groups %s', name, value, spr, self.groups)
+        Utils.logger.debug('append group %s with %s, super %s all groups %s', name, value, spr, self.groups)
         if spr not in self.groups:
             self.groups[spr] = self.groups['$root'].addgroup(spr)
         group = self.groups[spr].addgroup(name)
         group.append(value)
         self.groups[name] = group
-        logging.debug('group appended, groups %s', self.groups)
+        Utils.logger.debug('group appended, groups %s', self.groups)
 
     def leavegroup(self, name):
-        logging.debug('leaving group %s', name)
+        Utils.logger.debug('leaving group %s', name)
         if not self.good or name == None:
             return
 #        self.groups.pop(name)
