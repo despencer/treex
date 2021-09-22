@@ -184,6 +184,24 @@ class Utils:
             return node
 
     @classmethod
+    def tojson(cls, treex):
+        if len(treex.attributes) > 0:
+            jtree = [ treex.text ]
+            for kind, value in treex.attributes:
+                jvalue = value.text if kind == '$ref' else cls.tojson(value)
+                jtree.append( [ kind, jvalue ] )
+            return jtree
+        return treex.text
+
+    @classmethod
+    def load(cls, jstree):
+        return cls.fromjson(jstree)
+
+    @classmethod
+    def save(cls, treex):
+        return cls.tojson(treex)
+
+    @classmethod
     def prettyprint(cls, treex):
         return "{{ {0}{1} }}".format( treex.text, cls.prettyattrs(treex) )
 
