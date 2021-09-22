@@ -237,6 +237,9 @@ class Node:
     def has(self, kind):
         return kind in self.attributes
 
+    def __repr__(self):
+        return Utils.prettyprint(self)
+
 class MatchingContext:
     def __init__(self):
         self.good = True
