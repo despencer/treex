@@ -185,9 +185,10 @@ class Utils:
 
     @classmethod
     def tojson(cls, treex):
+        Utils.logger.debug('to json %s', Utils.prettyprint(treex) )
         if len(treex.attributes) > 0:
             jtree = [ treex.text ]
-            for kind, value in treex.attributes:
+            for kind, value in treex.attributes.items():
                 jvalue = value.text if kind == '$ref' else cls.tojson(value)
                 jtree.append( [ kind, jvalue ] )
             return jtree
