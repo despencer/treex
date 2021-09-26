@@ -46,11 +46,18 @@ class Selector:
     def selectnode(cls, treex, pattern, ctx):
         Utils.logger.debug('select node %s with %s', treex.text, pattern.text)
         if pattern.text[0] == '$':
-            if not pattern.text == '$any':
+            if pattern.text == '$any':
+                pass
+            elif pattern.text == '$option':
+                Utils.logger.debug('Trying list %s for %s', pattern.get('$list').attributes.values(), treex.text)
+                if not treex.text in map(lambda x: x.text, pattern.get('$list').attributes.values()):
+                    ctx.setbad()
+            else:
                 ctx.setbad()
         else:
             if treex.text != pattern.text:
                 ctx.setbad()
+        Utils.logger.debug('select node %s with %s, sofar %s', treex.text, pattern.text, ctx.isgood())
         group = None
         if ctx.isgood():
             if pattern.has('$group'):
@@ -69,7 +76,7 @@ class Selector:
         for (kind, value) in pattern.attributes.items():
             Utils.logger.debug('checking attr %s:%s', kind, Utils.prettyprint(value))
             if kind[0] == '$':
-                if kind not in ('$anchor','$optional','$super','$group','$ref'):
+                if kind not in ('$anchor','$optional','$super','$group','$ref','$option','$list'):
                     ctx.setbad()
             else:
                 if kind in treex.attributes:

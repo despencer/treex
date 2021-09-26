@@ -183,6 +183,19 @@
                        { "$" : ["arg"], "kind" : [ { "$" : ["type"], "value" : ["str"] } , { "$" : ["value"], "value" : ["zz"] } ] } ] }
 },
 {
+ "type" : "select",
+ "name" : "51",
+ "source" :
+[ "func",
+    [ "x", "3" ],
+    [ "y", "1" ] ],
+ "query" :
+[ "func",
+    [ "x",
+        [ "$option", [ "$group", "x"], [ "$list", ["values", ["1","3"], ["2","5"] ] ] ] ] ],
+ "result": { "x" : [ "3" ]}
+},
+{
  "type" : "construct",
  "name" : "61",
  "template" :

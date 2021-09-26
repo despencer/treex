@@ -2,6 +2,7 @@
 
 import json
 from treex import Treex
+from treex import Utils
 
 class TreexTest():
     def __init__(self):
@@ -25,6 +26,7 @@ class TreexTest():
         self.assertTrue(Treex.match(source, query))
 
     def doselect(self, testdef):
+        Utils.logger.info("Doing test %s", testdef["name"])
         source = Treex.fromjson(testdef["source"])
         if "srccontext" in testdef:
             source = Treex.apply(Treex.fromjson(testdef["srccontext"]), source)
