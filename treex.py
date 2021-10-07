@@ -25,6 +25,10 @@ class Treex:
     def prettyprint(cls, treex):
         return Utils.prettyprint(treex)
 
+    @classmethod
+    def setloglevel(cls, level):
+        Utils.logger.setLevel(level)
+
 class Selector:
     @classmethod
     def select(cls, treex, pattern):
