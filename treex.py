@@ -26,8 +26,9 @@ class Treex:
         return Utils.prettyprint(treex)
 
     @classmethod
-    def setloglevel(cls, level):
+    def setlogconfig(cls, level=logging.WARNING, location=""):
         Utils.logger.setLevel(level)
+        Utils.setloglocation(location)
 
 class Selector:
     @classmethod
@@ -178,10 +179,22 @@ class Utils:
         if not hasattr(cls, "logger"):
             name = "treex"
             cls.logger = logging.getLogger(name)
-            cls.logger.setLevel(logging.DEBUG)
-            fh = logging.FileHandler( name + '.log', mode='w')
-            fh.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(message)s'))
-            cls.logger.addHandler(fh)
+            cls.logger.setLevel(logging.WARNING)
+            cls.logger.addHandler( cls.getfilehandler(name, "") )
+
+    @classmethod
+    def setloglocation(cls, location):
+        cls.init()
+        for handler in cls.logger.handlers[:]:
+            if isinstance(handler, logging.FileHandler):
+                cls.logger.removeHandler(handler)
+        cls.logger.addHandler( cls.getfilehandler("treex", location) )
+
+    @classmethod
+    def getfilehandler(cls, name, location):
+        fh = logging.FileHandler( location + name + '.log', mode='w', delay=True)
+        fh.setFormatter(logging.Formatter('%(asctime)s %(levelname)s:%(message)s'))
+        return fh
 
     @classmethod
     def fromjson(cls, jstree):
